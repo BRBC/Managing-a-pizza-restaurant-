@@ -1,0 +1,201 @@
+CREATE TABLE sauce(
+sauce_name VARCHAR(20),
+sauce_id INTEGER NOT NULL,
+sauce_price DECIMAL(3) NOT NULL,
+sauce_quantity DECIMAL(2) NOT NULL,
+CONSTRAINT sauce_id_pk PRIMARY KEY(sauce_id),
+CONSTRAINT sauce_name_uq UNIQUE (sauce_name));
+
+CREATE SEQUENCE sauce_id_pk START WITH 1;
+
+CREATE OR REPLACE TRIGGER sauce_trigger
+BEFORE INSERT ON sauce 
+FOR EACH ROW
+
+BEGIN
+  SELECT sauce_id_pk.NEXTVAL
+  INTO   :new.sauce_id
+  FROM   dual;
+END;
+
+ALTER TABLE sauce
+ADD CONSTRAINT sauce_name_check CHECK (regexp_like(sauce_name,'^[a-zA-Z]*$'));
+
+
+
+INSERT INTO sauce(sauce_name,sauce_price,sauce_quantity) VALUES('Ketchup',8,50);
+INSERT INTO sauce(sauce_name,sauce_price,sauce_quantity) VALUES('Mayonnaise',7,50);
+INSERT INTO sauce(sauce_name,sauce_price,sauce_quantity) VALUES('Tartar',15,60);
+INSERT INTO sauce(sauce_name,sauce_price,sauce_quantity) VALUES('Mustar',12,50);
+INSERT INTO sauce(sauce_name,sauce_price,sauce_quantity) VALUES('BBQ',8,40);
+
+INSERT INTO sauce(sauce_name,sauce_price,sauce_quantity) VALUES('HotSauce',10,40);
+
+
+CREATE TABLE burgers(
+burger_name VARCHAR(20) NOT NULL,
+burger_id INTEGER NOT NULL,
+burger_meat_type VARCHAR(10) NOT NULL,
+burger_weight DECIMAL(3) NOT NULL,
+burger_price DECIMAL(2)NOT NULL,
+sauce_id INTEGER NOT NULL,
+CONSTRAINT burger_sauce_fk FOREIGN KEY (sauce_id) REFERENCES sauce(sauce_id));
+
+ALTER TABLE burgers
+ADD CONSTRAINT burger_name_uq UNIQUE (burger_name);
+
+ALTER TABLE burgers 
+ADD CONSTRAINT burger_id_pk PRIMARY KEY (burger_id); 
+CREATE SEQUENCE burger_id_pk START WITH 1;
+
+CREATE OR REPLACE TRIGGER burger_trigger
+BEFORE INSERT ON burgers 
+FOR EACH ROW
+
+BEGIN
+  SELECT burger_id_pk.NEXTVAL
+  INTO   :new.burger_id
+  FROM   dual;
+END;
+
+ALTER TABLE burgers
+ADD CONSTRAINT burger_name_check CHECK (regexp_like(burger_name,'^[a-zA-Z]*$'));
+
+
+ALTER TABLE burgers
+ADD CONSTRAINT burger_meat_check CHECK (regexp_like(burger_meat_type,'^[a-zA-Z]*$'));
+
+
+INSERT INTO burgers(burger_name,burger_meat_type,burger_weight,burger_price,sauce_id) VALUES('ChickenBurger','chicken',530,85,1);
+INSERT INTO burgers(burger_name,burger_meat_type,burger_weight,burger_price,sauce_id) VALUES('Cheeseburger','beef',460,75,1);
+INSERT INTO burgers(burger_name,burger_meat_type,burger_weight,burger_price,sauce_id) VALUES('PulledPorkBurger','pork',600,89,4);
+INSERT INTO burgers(burger_name,burger_meat_type,burger_weight,burger_price,sauce_id) VALUES('KingBurger','lamb',620,95,7);
+INSERT INTO burgers(burger_name,burger_meat_type,burger_weight,burger_price,sauce_id) VALUES('RoyalBurger','beef',650,99,2);
+INSERT INTO burgers(burger_name,burger_meat_type,burger_weight,burger_price,sauce_id) VALUES('AmericanBurger','beef',300,49,5);
+
+
+CREATE TABLE drinks(
+drink_name VARCHAR(20),
+drink_id INTEGER NOT NULL,
+drink_type VARCHAR(10),
+drink_price DECIMAL(3) NOT NULL,
+drink_volume DECIMAL(4) NOT NULL,
+CONSTRAINT drinks_id_pk PRIMARY KEY (drink_id));
+
+CREATE SEQUENCE drinks_id_pk START WITH 1;
+
+
+CREATE OR REPLACE TRIGGER drink_trigger
+BEFORE INSERT ON drinks 
+FOR EACH ROW
+BEGIN
+  SELECT drinks_id_pk.NEXTVAL
+  INTO   :new.drink_id
+  FROM   dual;
+END;
+
+
+ALTER TABLE drinks
+ADD CONSTRAINT drink_name_uq UNIQUE (drink_name);
+
+ALTER TABLE drinks
+ADD CONSTRAINT drink_name_check CHECK (regexp_like(drink_name,'^[a-zA-Z]*$'));
+
+ALTER TABLE drinks
+ADD CONSTRAINT drink_type_check CHECK (regexp_like(drink_type,'^[a-zA-Z]*$'));
+
+
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('OrangeFresh','juice',40,300);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('GrapefruitFresh','juice',70,300);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('Espresso','coffee',25,30);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('Americano','coffee',30,80);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('Cappuccino','coffee',35,180);
+
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('FeteascaAlba','wine',220,750);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('Chardonnay','wine',110,375);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('NegruDePurcari','wine',230,375);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('RaraNeagra','wine',150,750);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('Beefeater','gin',590,1000);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('BacardiCartaNegra','rom',720,1000);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('Bailey','liquour',475,500);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('Jagermeister','liquor',470,500);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('Jameson','whiskey',50,50);
+Insert into drinks (drink_name,drink_type,drink_price,drink_volume) values('JimBean','whiskey',50,45);
+
+
+CREATE TABLE pizza(
+pizza_name VARCHAR(20),
+pizza_id INTEGER NOT NULL,
+pizza_size DECIMAL(3) NOT NULL,
+pizza_price DECIMAL(3) NOT NULL,
+drink_id INTEGER NOT NULL,
+CONSTRAINT pizza_drink_fk FOREIGN KEY (drink_id) REFERENCES drinks(drink_id));
+
+alter table pizza
+add CONSTRAINT pizza_id_pk PRIMARY KEY(pizza_id);
+
+ALTER TABLE pizza
+ADD CONSTRAINT pizza_name_uq UNIQUE (pizza_name);
+
+CREATE SEQUENCE pizza_id_pk START WITH 1;
+
+
+CREATE OR REPLACE TRIGGER pizza_trigger
+BEFORE INSERT ON pizza
+FOR EACH ROW
+BEGIN
+  SELECT pizza_id_pk.NEXTVAL
+  INTO   :new.pizza_id
+  FROM   dual;
+END;
+
+ALTER TABLE pizza
+ADD CONSTRAINT pizza_name_check CHECK (regexp_like(pizza_name,'^[a-zA-Z]*$'));
+
+
+Insert into pizza(pizza_name,pizza_size,pizza_price,drink_id) values ('Fantasia',35,92,2);
+Insert into pizza(pizza_name,pizza_size,pizza_price,drink_id) values ('Rustica',40,120,7);
+Insert into pizza(pizza_name,pizza_size,pizza_price,drink_id) values ('Capriciosa',36,100,10);
+Insert into pizza(pizza_name,pizza_size,pizza_price,drink_id) values ('Deliciosa',50,120,3);
+Insert into pizza(pizza_name,pizza_size,pizza_price,drink_id) values ('Carnivora',42,110,8);
+Insert into pizza(pizza_name,pizza_size,pizza_price,drink_id) values ('Pepperoni',36,100,2);
+
+
+
+CREATE TABLE pizzatopping(
+pizza_id INTEGER NOT NULL,
+meat_type VARCHAR(20),
+cheese_type VARCHAR(20),
+extra_topping VARCHAR(20),
+CONSTRAINT pizza_topping_pk PRIMARY KEY (pizza_id),
+CONSTRAINT pizza_topping_fk FOREIGN KEY (pizza_id) REFERENCES pizza(pizza_id));
+
+CREATE SEQUENCE pizza_topping_pk START WITH 1;
+
+
+CREATE OR REPLACE TRIGGER pizza_topping_trigger
+BEFORE INSERT ON pizzatopping
+FOR EACH ROW
+BEGIN
+  SELECT pizza_topping_pk.NEXTVAL
+  INTO   :new.pizza_id
+  FROM   dual;
+END;
+
+ALTER TABLE pizzatopping
+ADD CONSTRAINT pizza_meat_check CHECK (regexp_like(meat_type,'^[a-zA-Z]*$'));
+
+ALTER TABLE pizzatopping
+ADD CONSTRAINT pizza_cheese_check CHECK (regexp_like(cheese_type,'^[a-zA-Z]*$'));
+
+ALTER TABLE pizzatopping
+ADD CONSTRAINT pizza_extra_check CHECK (regexp_like(extra_topping,'^[a-zA-Z]*$'));
+
+Insert into pizzatopping(meat_type, cheese_type,extra_topping) values ('Chicken breast','Mozzarella','Spinach');
+Insert into pizzatopping(meat_type, cheese_type,extra_topping) values ('Bacon','Parmesan','Mushrooms');
+Insert into pizzatopping(meat_type, cheese_type,extra_topping) values ('Salami','Goat cheese','Cherry tomatoes');
+Insert into pizzatopping(meat_type, cheese_type,extra_topping) values ('Ham','Cheddar','Onion');
+Insert into pizzatopping(meat_type, cheese_type,extra_topping) values ('Cabanos','Gorgonzola','Pepper');
+
+
+
